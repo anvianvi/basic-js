@@ -15,9 +15,34 @@ const { NotImplementedError } = require('../extensions/index.js');
  * the output should be ["file", "file(1)", "image", "file(1)(1)", "file(2)"]
  *
  */
-function renameFiles(/* names */) {
-  throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
+function getNameCandidate(name, iteration) {
+  return name + `(${iteration})`;
+}
+
+function renameFiles(names) {
+  const out = [];
+  names.forEach((el, i, arr) => {
+    let exists = out.some((e) => e === el);
+
+    if (!exists) {
+      out.push(el);
+      return;
+    }
+
+    let iteration = 1;
+    let newVal = getNameCandidate(el, iteration);
+
+    while (exists) {
+      newVal = getNameCandidate(el, iteration);
+      exists = out.some((e) => e === newVal);
+
+      iteration++;
+    }
+
+    out.push(newVal);
+  });
+
+  return out;
 }
 
 module.exports = {
