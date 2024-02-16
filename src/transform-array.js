@@ -18,46 +18,29 @@ function transform(arr) {
     throw new Error(`'arr' parameter must be an instance of the Array!`);
   }
 
-  const answerArr = [];
+  let transformedArr = [];
 
-  arr.forEach((element, index, array) => {
-    if (answerArr[index - 1] === "skipped") {
-      return;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] === '--discard-next') {
+      i++;
+    } else if (arr[i] === '--discard-prev') {
+      if (transformedArr.length !== 0 && arr[i - 2] !== '--discard-next') {
+        transformedArr.pop();
+      }
+    } else if (arr[i] === '--double-next') {
+      if (i < arr.length - 1) {
+        transformedArr.push(arr[i + 1]);
+      }
+    } else if (arr[i] === '--double-prev') {
+      if (i !== 0 && arr[i - 2] !== '--discard-next') {
+        transformedArr.push(arr[i - 1]);
+      }
+    } else {
+      transformedArr.push(arr[i]);
     }
+  }
 
-    switch (element) {
-      case "--double-next":
-        if (index < arr.length && array[index + 1]) {
-          answerArr.push(array[index + 1]);
-        }
-        break;
-
-      case "--double-prev":
-        if (array[index - 1]) {
-          answerArr.push(array[index - 1]);
-        }
-        break;
-
-      case "--discard-next":
-        answerArr.push("skipped");
-        answerArr.push("skipped");
-        break;
-
-      case "--discard-prev":
-        if (index >= 1) {
-          answerArr.splice(index - 1, 1);
-        }
-        break;
-
-      default:
-        if (!answerArr[index]) {
-          answerArr.push(element);
-        }
-        break;
-    }
-  });
-
-  return answerArr.filter((v) => v !== "skipped");
+  return transformedArr;
 }
 
 
